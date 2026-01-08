@@ -7,10 +7,10 @@ const Header = ({ darkMode, setDarkMode }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { label: 'Home', href: '#home' },
-    { label: 'Menu', href: '#menu' },
-    { label: 'Gallery', href: '#gallery' },
-    { label: 'Contact', href: '#contact' },
+    { label: 'Home', href: 'home' },
+    { label: 'Menu', href: 'menu' },
+    { label: 'Gallery', href: 'gallery' },
+    { label: 'Contact', href: 'contact' },
   ];
 
   return (
