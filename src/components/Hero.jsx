@@ -13,7 +13,7 @@ const Hero = () => {
         {/* Replace the div below with your actual image */}
         <div 
           className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1920')] bg-cover bg-center mix-blend-overlay opacity-30"
-          style={{ backgroundImage: 'url(images/pizza.jpg)' }}
+          style={{ backgroundImage: 'url()' }}
         />
       </div>
 
