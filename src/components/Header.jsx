@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Instagram, MapPin, Pizza } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Header = ({ darkMode, setDarkMode }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState('');
 
   const navItems = [
     { label: 'Home', href: '#home' },
@@ -12,6 +13,47 @@ const Header = ({ darkMode, setDarkMode }) => {
     { label: 'Gallery', href: '#gallery' },
     { label: 'Contact', href: '#contact' },
   ];
+
+  // Custom scroll function
+  const scrollToSection = (hash) => {
+    setIsOpen(false);
+    
+    // Small delay to ensure menu closes first
+    setTimeout(() => {
+      const element = document.querySelector(hash);
+      if (element) {
+        const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+
+        // Update URL hash without page jump
+        window.history.pushState(null, null, hash);
+      } else {
+        console.warn(`Element ${hash} not found`);
+      }
+    }, 100);
+  };
+
+  // Handle click on nav items
+  const handleNavClick = (e, href) => {
+    e.preventDefault();
+    scrollToSection(href);
+  };
+
+  // Listen for hash changes in URL
+  useEffect(() => {
+    const handleHashChange = () => {
+      setActiveHash(window.location.hash);
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   return (
     <motion.header
@@ -23,37 +65,36 @@ const Header = ({ darkMode, setDarkMode }) => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center gap-3"
-          >
-            <div className="w-10 h-10 bg-gradient-pizza rounded-full flex items-center justify-center">
-              <Pizza className="w-6 h-6 text-white" />
-            </div>
+          <div className="flex items-center gap-3">
+            <Pizza className="w-8 h-8 text-pizza-red" />
             <div>
-              <h1 className="text-2xl font-nyc font-bold nyc-gradient-text">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                 MCKEOWN'S SLICES
               </h1>
-              <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
+              <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                 <MapPin className="w-3 h-3" />
                 Levenshulme, Manchester
-              </p>
+              </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
-              <motion.a
+              <motion.button
                 key={item.label}
-                href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="text-gray-700 dark:text-gray-300 hover:text-pizza-red dark:hover:text-pizza-red font-medium transition-colors relative group"
+                className={`${
+                  activeHash === item.href 
+                    ? 'text-pizza-red dark:text-pizza-red' 
+                    : 'text-gray-700 dark:text-gray-300'
+                } hover:text-pizza-red dark:hover:text-pizza-red font-medium transition-colors relative group bg-transparent border-none cursor-pointer`}
               >
                 {item.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-pizza-red to-pizza-orange group-hover:w-full transition-all duration-300" />
-              </motion.a>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-pizza-red group-hover:w-full transition-all duration-300"></span>
+              </motion.button>
             ))}
             
             {/* Instagram */}
@@ -90,18 +131,18 @@ const Header = ({ darkMode, setDarkMode }) => {
               className="md:hidden mt-4 overflow-hidden"
             >
               <div className="flex flex-col gap-4 py-4">
-                {navItems.map((item, index) => (
-                  <motion.a
+                {navItems.map((item, ) => (
+                  <button
                     key={item.label}
-                    href={item.href}
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    onClick={() => setIsOpen(false)}
-                    className="text-gray-700 dark:text-gray-300 hover:text-pizza-red dark:hover:text-pizza-red font-medium py-2 border-b border-gray-200 dark:border-gray-700"
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={`${
+                      activeHash === item.href 
+                        ? 'text-pizza-red dark:text-pizza-red' 
+                        : 'text-gray-700 dark:text-gray-300'
+                    } hover:text-pizza-red dark:hover:text-pizza-red font-medium py-2 border-b border-gray-200 dark:border-gray-700 text-left bg-transparent border-none cursor-pointer`}
                   >
                     {item.label}
-                  </motion.a>
+                  </button>
                 ))}
                 <div className="flex items-center justify-between pt-4">
                   <motion.a
